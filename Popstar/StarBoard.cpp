@@ -511,6 +511,7 @@ CCriticalSection StarBoardBase::m_cs;
 bool StarBoard::m_bTerminate;
 int StarBoard::m_restA;
 int StarBoard::m_depthC;
+bool StarBoard::m_bAccCalc;
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -526,9 +527,9 @@ StarBoardBase(size, colors, bVerticalClear, bHorizontalClear)
     m_szMargin.SetSize(SB_MARGIN_X, SB_MARGIN_Y);
     m_szBlock.SetSize(SB_BLOCK_X, SB_BLOCK_Y);
     m_clrBorder.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-    m_font.CreateFont(24, 10, 0, 0, 16, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
+    m_font.CreateFont(24, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
         OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, TEXT("微软雅黑"));
-    m_font_cnt.CreateFont(24, 10, 0, 0, 24, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
+    m_font_cnt.CreateFont(24, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
         OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, TEXT("宋体"));
     m_depthC = SB_DEPTH_CHOICE;
     m_restA = SB_REST_ALL;
@@ -775,6 +776,7 @@ void StarBoard::Display( CDC* pDC, LONG x, LONG y, bool bShowEdit /*= false*/ )
         }
 
         CString optStr;
+        optStr.Append(_T("按空格键打开帮助\r\n\r\n"));
         optStr.AppendFormat(_T("选中方块数目： %d\r\n"), m_selCounts);
         optStr.AppendFormat(_T("选中方块分数： %d\r\n"), CalcSelScore(m_selCounts));
         optStr.AppendFormat(_T("\r\n剩余： %d\r\n"), m_restBlocks);
@@ -897,6 +899,11 @@ void StarBoard::Serialize( CArchive& ar )
     }
 }
 
+void StarBoard::ToggleSpeed()
+{
+    m_bAccCalc = !m_bAccCalc;
+}
+
 void StarBoard::Terminate( bool& bTerminate, bool bWrite /*= true*/ )
 {
     m_cs.Lock(INFINITE);
@@ -907,7 +914,7 @@ void StarBoard::Terminate( bool& bTerminate, bool bWrite /*= true*/ )
     m_cs.Unlock();
 }
 
-void StarBoard::SetColors( int colors )
+void StarBoard::SetColors( int colors, COLORREF color )
 {
     ASSERT(colors > 0);
     ClearBrush();
@@ -915,7 +922,7 @@ void StarBoard::SetColors( int colors )
     m_iColors = colors + 1;
     m_arrColors.SetSize(m_iColors);
     m_arrClr.SetSize(m_iColors);
-    SetColor(0, RGB(0, 0, 0));
+    SetColor(0, color);
 }
 
 void StarBoard::SetSize( int size )
@@ -994,6 +1001,9 @@ UINT StarBoard::DaemonProcessor( LPVOID pVoid )
 
     while (true)
     {
+        if (!m_bAccCalc)
+            ::Sleep(100);
+
         pBoard->Terminate(bTerminate, false);
 
         POSITION pos_bs = liBS.GetHeadPosition();

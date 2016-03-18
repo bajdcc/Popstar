@@ -109,7 +109,7 @@ public:
     void SetColor( int index, COLORREF color ); // 设置颜色， index:(0) 为背景色
     void SetBorderColor( COLORREF color ); // 设置选中边框颜色
     void SetSize( int size ); // 设置阶数
-    void SetColors( int colors ); // 设置颜色数
+    void SetColors( int colorsbgcolor, COLORREF color ); // 设置颜色数
 
     // 算法
     void RunWorkingThread(); // 运行后台线程
@@ -119,6 +119,9 @@ public:
 
     // 文件操作
     void Serialize( CArchive& ar );
+
+    // 调整速度
+    void ToggleSpeed();
 
 private:
     StarBoard(const StarBoard& base); // 禁止默认复制
@@ -144,5 +147,6 @@ public:
     static int          m_restA; // 剩余全搜
     static CWinThread*  m_pThread; // 后台线程
     static bool         m_bTerminate; // 是否要终止线程
+    static bool         m_bAccCalc; // 是否加速计算
 };
 
