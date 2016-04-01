@@ -776,7 +776,15 @@ void StarBoard::Display( CDC* pDC, LONG x, LONG y, bool bShowEdit /*= false*/ )
         }
 
         CString optStr;
-        optStr.Append(_T("按空格键打开帮助\r\n\r\n"));
+        optStr.Append(_T("## 游戏玩法 ##\r\n"));
+        optStr.Append(_T("  选择至少2个以上同样颜色的方块则消去\r\n"));
+        optStr.Append(_T("  没有时间限制，过关需获得目标分数\r\n"));
+        optStr.Append(_T("\r\n"));
+        optStr.Append(_T("## 得分方法 ##\r\n"));
+        optStr.Append(_T("  基础分 = 消除方块数*消除方块数*5\r\n"));
+        optStr.Append(_T("  奖励分 = 2000 - 剩余方块数 * 剩余方块数 * 20\r\n"));
+        optStr.Append(_T("  总分 = 基础分 + 奖励分\r\n"));
+        optStr.Append(_T("\r\n按空格键打开帮助\r\n\r\n"));
         optStr.AppendFormat(_T("选中方块数目： %d\r\n"), m_selCounts);
         optStr.AppendFormat(_T("选中方块分数： %d\r\n"), CalcSelScore(m_selCounts));
         optStr.AppendFormat(_T("\r\n剩余： %d\r\n"), m_restBlocks);
@@ -796,7 +804,7 @@ void StarBoard::Display( CDC* pDC, LONG x, LONG y, bool bShowEdit /*= false*/ )
         }
 
         CRect rtText = rt;
-        rtText.top = y + 20;
+        rtText.top = y - 10;
         rtText.left = x + m_iSize * (m_szBlock.cx + m_szMargin.cx) + 50;
         rtText.bottom = y + m_iSize * (m_szBlock.cy + m_szMargin.cy);
         if (rtText.bottom < 600) rtText.bottom = 600;
